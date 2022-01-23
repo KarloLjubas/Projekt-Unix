@@ -23,6 +23,7 @@
 int lsh_cd(char **args);
 int lsh_help(char **args);
 int lsh_exit(char **args);
+int myPWD(char **args);
 
 /*
   List of builtin commands, followed by their corresponding functions.
@@ -30,13 +31,15 @@ int lsh_exit(char **args);
 char *builtin_str[] = {
   "cd",
   "help",
-  "exit"
+  "exit",
+  "myPWD"
 };
 
 int (*builtin_func[]) (char **) = {
   &lsh_cd,
   &lsh_help,
-  &lsh_exit
+  &lsh_exit,
+  &lsh_myPWD
 };
 
 int lsh_num_builtins() {
@@ -99,6 +102,24 @@ int lsh_exit(char **args)
   @param args Null terminated list of arguments (including program).
   @return Always returns 1, to continue execution.
  */
+int myPWD(char **args){
+	char cwd[PATH_MAX];
+	if(args[1] != NULL){
+		write(STDOUT_FILENO,"\nERROR: Did not expect argument '",strlen("\nERROR: Did not expect argument '"));
+		write(STDOUT_FILENO,args[1],strlen(args[1]));
+		write(STDOUT_FILENO,"' for commmand 'pwd'\n",strlen("' for commmand 'pwd'\n"));
+	} else{
+		if(getcwd(cwd, sizeof(cwd)) != NULL){
+			write(STDOUT_FILENO,"Current working directory: ",strlen("Current working directory: "));
+			write(STDOUT_FILENO,cwd,strlen(cwd));
+			write(STDOUT_FILENO,"\n",strlen("\n"));
+		}
+		else{
+			write(STDOUT_FILENO,"\nERROR: could not load current working directory\n",strlen("\nERROR: could not load current working directory\n"));
+		}
+	}
+	return 1;
+}
 int lsh_launch(char **args)
 {
   pid_t pid;
